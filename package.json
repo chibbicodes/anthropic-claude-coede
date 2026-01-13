@@ -1,0 +1,32 @@
+{
+  "name": "notion-staff-meetings-hub",
+  "version": "1.0.0",
+  "description": "Central hub for managing All Staff meetings in Notion with agenda items, statuses, and meeting notes",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "setup": "npm run build && node dist/setup-database.js",
+    "add-item": "npm run build && node dist/add-item.js",
+    "update-status": "npm run build && node dist/update-status.js",
+    "dev": "ts-node"
+  },
+  "keywords": [
+    "notion",
+    "meetings",
+    "agenda",
+    "staff-meetings"
+  ],
+  "author": "Out in Tech",
+  "license": "MIT",
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "dotenv": "^16.4.5",
+    "inquirer": "^9.2.12"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.11.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
