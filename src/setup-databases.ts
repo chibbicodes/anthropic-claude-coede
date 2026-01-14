@@ -81,7 +81,11 @@ async function setupDatabases() {
 
     console.log('✅ Meetings database created!');
     console.log(`   Database ID: ${meetingsDatabase.id}`);
-    console.log(`   URL: ${meetingsDatabase.url}\n`);
+    if ('url' in meetingsDatabase) {
+      console.log(`   URL: ${meetingsDatabase.url}\n`);
+    } else {
+      console.log();
+    }
 
     // ========================================
     // STEP 2: Create Agenda Items Database
@@ -123,7 +127,7 @@ async function setupDatabases() {
             dual_property: {
               synced_property_name: 'Agenda Items',
             },
-          },
+          } as any,
         },
         // Status select
         Status: {
@@ -172,7 +176,11 @@ async function setupDatabases() {
 
     console.log('✅ Agenda Items database created!');
     console.log(`   Database ID: ${agendaItemsDatabase.id}`);
-    console.log(`   URL: ${agendaItemsDatabase.url}\n`);
+    if ('url' in agendaItemsDatabase) {
+      console.log(`   URL: ${agendaItemsDatabase.url}\n`);
+    } else {
+      console.log();
+    }
 
     // ========================================
     // STEP 3: Add Rollups to Meetings Database
@@ -187,7 +195,7 @@ async function setupDatabases() {
           rollup: {
             relation_property_name: 'Agenda Items',
             rollup_property_name: 'Agenda Item',
-            function: 'count',
+            function: 'count' as any,
           },
         },
         // Count of completed items
@@ -195,10 +203,10 @@ async function setupDatabases() {
           rollup: {
             relation_property_name: 'Agenda Items',
             rollup_property_name: 'Status',
-            function: 'count_values',
+            function: 'count_values' as any,
           },
         },
-      },
+      } as any,
     });
 
     console.log('✅ Rollup properties added!\n');

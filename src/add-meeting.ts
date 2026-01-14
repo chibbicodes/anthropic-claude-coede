@@ -125,7 +125,9 @@ async function addMeeting() {
     });
 
     console.log('✅ Meeting created successfully!');
-    console.log(`🔗 Meeting URL: ${page.url}`);
+    if ('url' in page) {
+      console.log(`🔗 Meeting URL: ${page.url}`);
+    }
     console.log(`📋 Meeting ID: ${page.id}\n`);
     console.log('💡 Next: Add agenda items with npm run add-item\n');
   } catch (error: any) {

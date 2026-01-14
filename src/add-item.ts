@@ -208,7 +208,10 @@ async function addItem() {
     });
 
     console.log('✅ Agenda item created successfully!');
-    console.log(`🔗 ${page.url}\n`);
+    if ('url' in page) {
+      console.log(`🔗 ${page.url}`);
+    }
+    console.log();
   } catch (error: any) {
     console.error('❌ Error creating agenda item:', error.message);
 
