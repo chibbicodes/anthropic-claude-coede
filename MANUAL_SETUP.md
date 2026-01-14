@@ -1,50 +1,89 @@
-# Manual Setup Guide: All Staff Meetings Database
+# Manual Setup Guide: All Staff Meetings Hub (Two-Database Structure)
 
-This guide will walk you through creating your All Staff Meetings database directly in Notion without needing API access.
+This guide will walk you through creating your All Staff Meetings system with **two related databases** directly in Notion without needing API access.
 
 ## 🎯 Overview
 
-You'll create a database with:
-- Meeting dates and facilitators
-- Agenda items with status tracking
-- Category tags
-- Multiple views for different perspectives
-- Space for AI-generated meeting notes
+You'll create a two-database system:
+
+1. **Meetings Database** - Meeting-level information (date, facilitator, notes)
+2. **Agenda Items Database** - Individual topics with status tracking
+
+These databases are **linked via relations**, giving you:
+- Meeting-centric view: See each meeting with all its agenda items
+- All-items view: Flat list of every item across all meetings with statuses
+- Smart filtering and rollups
 
 ---
 
-## 📋 Step 1: Create the Database
+## 📋 Step 1: Create the Meetings Database
 
 1. Go to your page: https://www.notion.so/All-Staff-draft-2e78dac1d83e805fb8c6f28f9b1b456f
-2. Scroll to where you want the database
+2. Scroll to where you want the databases
 3. Type `/database` and select **"Database - Inline"**
-4. Name it: **"All Staff Meetings Hub"**
+4. Name it: **"All Staff Meetings"**
+
+### Properties for Meetings Database:
+
+Delete all default properties except "Name", then set up these properties:
+
+#### 1. **Meeting Name** (Title - already exists)
+   - This is the main identifier (e.g., "All Staff - Jan 20, 2026")
+
+#### 2. **Meeting Date** (Date)
+   - Add property → "Date"
+   - Name: **"Meeting Date"**
+   - When the meeting occurs
+
+#### 3. **Facilitator** (Person)
+   - Add property → "Person"
+   - Name: **"Facilitator"**
+   - Who leads the meeting
+
+#### 4. **Status** (Select)
+   - Add property → "Select"
+   - Name: **"Status"**
+   - Add these options:
+     - 🔵 **Upcoming** (Blue)
+     - 🟡 **In Progress** (Yellow)
+     - 🟢 **Completed** (Green)
+
+#### 5. **AI Meeting Notes** (URL)
+   - Add property → "URL"
+   - Name: **"AI Meeting Notes"**
+   - Link to your AI-generated notes
+
+#### 6. **Agenda Items** (Relation - will be added from the other side)
+   - This will be automatically created when you set up the Agenda Items database
 
 ---
 
-## 🏗️ Step 2: Set Up Properties
+## 📝 Step 2: Create the Agenda Items Database
 
-Delete all default properties except "Name", then add these properties:
+1. Below the Meetings database, type `/database` again
+2. Select **"Database - Inline"**
+3. Name it: **"Agenda Items"**
 
-### 1. **Name** (Title - already exists)
-   - Rename to: **"Agenda Item"**
-   - This will contain the topic/issue to discuss
+### Properties for Agenda Items Database:
 
-### 2. **Meeting Date** (Date)
-   - Click "+ Add a property"
-   - Select "Date"
-   - Name it: **"Meeting Date"**
-   - This tracks when the item will be/was discussed
+#### 1. **Agenda Item** (Title)
+   - Rename "Name" to: **"Agenda Item"**
+   - The topic/issue to discuss
 
-### 3. **Facilitator** (Person)
-   - Add property → "Person"
-   - Name: **"Facilitator"**
-   - This is who leads the meeting
+#### 2. **Meeting** (Relation) ⭐ IMPORTANT
+   - Add property → "Relation"
+   - Name: **"Meeting"**
+   - **Select the "All Staff Meetings" database** you just created
+   - ✅ Check "Show on All Staff Meetings"
+   - For "Property name on All Staff Meetings", enter: **"Agenda Items"**
+   - Click "Add relation"
 
-### 4. **Status** (Select)
+   This creates the two-way link between databases!
+
+#### 3. **Status** (Select)
    - Add property → "Select"
    - Name: **"Status"**
-   - Add these options (with suggested colors):
+   - Add these options:
      - 🔵 **Backlog** (Gray)
      - 📝 **To Discuss** (Blue)
      - 💬 **In Discussion** (Yellow)
@@ -52,10 +91,10 @@ Delete all default properties except "Name", then add these properties:
      - 🎯 **Action Required** (Orange)
      - ✔️ **Completed** (Purple)
 
-### 5. **Category** (Multi-select)
+#### 4. **Category** (Multi-select)
    - Add property → "Multi-select"
    - Name: **"Category"**
-   - Add these tags (assign colors as you prefer):
+   - Add these tags:
      - Internal
      - Staff Development
      - Events
@@ -67,27 +106,7 @@ Delete all default properties except "Name", then add these properties:
      - Community
      - Volunteers
 
-### 6. **Owner/Assignee** (Person)
-   - Add property → "Person"
-   - Name: **"Owner/Assignee"**
-   - This tracks who is responsible for action items
-
-### 7. **Decision/Outcome** (Text)
-   - Add property → "Text"
-   - Name: **"Decision/Outcome"**
-   - Use this to capture what was decided or what action was taken
-
-### 8. **AI Meeting Notes** (URL)
-   - Add property → "URL"
-   - Name: **"AI Meeting Notes"**
-   - Link to your AI-generated notes document
-
-### 9. **Completed Date** (Date)
-   - Add property → "Date"
-   - Name: **"Completed Date"**
-   - Automatically track when items are marked as Completed (you'll update this manually)
-
-### 10. **Priority** (Select) - Optional but recommended
+#### 5. **Priority** (Select)
    - Add property → "Select"
    - Name: **"Priority"**
    - Options:
@@ -95,64 +114,133 @@ Delete all default properties except "Name", then add these properties:
      - 🟡 Medium (Yellow)
      - 🟢 Low (Green)
 
+#### 6. **Owner/Assignee** (Person)
+   - Add property → "Person"
+   - Name: **"Owner/Assignee"**
+   - Who is responsible for this item
+
+#### 7. **Decision/Outcome** (Text)
+   - Add property → "Text"
+   - Name: **"Decision/Outcome"**
+   - What was decided or what action was taken
+
+#### 8. **Completed Date** (Date)
+   - Add property → "Date"
+   - Name: **"Completed Date"**
+   - When the item was marked complete
+
 ---
 
-## 👁️ Step 3: Create Views
+## 🔗 Step 3: Add Rollups to Meetings Database (Optional but Recommended)
 
-Your database will have multiple views. Here's how to set them up:
+Go back to your **Meetings database** and add these rollup properties to get summary statistics:
 
-### View 1: **"Active Agenda"** (Default - Table)
+#### **# Items** (Rollup)
+   - Add property → "Rollup"
+   - Name: **"# Items"**
+   - Relation: Select "Agenda Items"
+   - Property: Select "Agenda Item"
+   - Calculate: **Count all**
 
-This is your main working view.
+   This shows the total number of agenda items for each meeting.
 
-1. This should be your default table view
-2. Click the "..." menu on the view → **"Filter"**
-3. Add these filter rules:
-   - **Rule 1**: Status → Is not → Completed
-   - **Rule 2**: Status → Is not → Decided
+#### **# Completed** (Rollup)
+   - Add property → "Rollup"
+   - Name: **"# Completed"**
+   - Relation: Select "Agenda Items"
+   - Property: Select "Status"
+   - Calculate: **Count values** → Select "Completed"
+
+   This shows how many items are completed for each meeting.
+
+---
+
+## 👁️ Step 4: Create Views
+
+### For MEETINGS Database:
+
+#### View 1: **"Timeline"** (Timeline or Table - Default)
+
+1. Keep the default table view or switch to Timeline
+2. Name: **"Timeline"**
+3. **Group by**: Status (shows Upcoming, In Progress, Completed sections)
+4. **Sort**: Meeting Date → Ascending
+5. **Filter** (optional):
+   - Meeting Date → Is on or after → 30 days ago
+   (This hides old completed meetings)
+
+This view lets you see each meeting as a card, and when you open it, you'll see all the linked agenda items inside!
+
+#### View 2: **"Archive"** (Table)
+
+1. Add view → "Table"
+2. Name: **"Archive"**
+3. **Filter**:
+   - Status → Is → Completed
+4. **Sort**: Meeting Date → Descending
+5. Keep collapsed by default
+
+### For AGENDA ITEMS Database:
+
+#### View 1: **"All Items"** (Table - Default)
+
+This is your main flat view of all agenda items across all meetings.
+
+1. Default table view
+2. Name: **"All Items"**
+3. **Filter**:
+   - Status → Is not → Completed
    - OR
-   - **Rule 3**: Completed Date → Is within → Past 30 days
+   - Completed Date → Is within → Past 30 days
+4. **Sort**:
+   - Priority → Descending (High first)
+   - Status → Ascending
+5. **Group by** (optional): Meeting or Status
 
-4. **Sort by**:
-   - First: Meeting Date → Ascending
-   - Second: Status → Ascending
+#### View 2: **"By Status"** (Board)
 
-5. **Properties shown** (toggle these on):
-   - Agenda Item
-   - Meeting Date
-   - Status
-   - Category
-   - Owner/Assignee
-   - Facilitator
-   - Priority
-
-### View 2: **"Upcoming Meetings"** (Timeline or Table)
-
-Shows what's coming up.
-
-1. Click "+ Add a view"
-2. Select "Table" (or "Timeline" if you prefer visual)
-3. Name: **"Upcoming Meetings"**
-4. **Filter**:
-   - Meeting Date → Is on or after → Today
-5. **Sort**:
-   - Meeting Date → Ascending
-6. **Group by**: Meeting Date
-
-### View 3: **"This Week"** (Board)
-
-Kanban-style view of current items.
+Kanban-style view.
 
 1. Add view → "Board"
-2. Name: **"This Week"**
+2. Name: **"By Status"**
 3. **Group by**: Status
 4. **Filter**:
-   - Meeting Date → Is within → This week
-5. This gives you a visual board of items moving through stages
+   - Status → Is not → Completed
+5. **Sort**: Priority → Descending
 
-### View 4: **"Archive"** (Table)
+#### View 3: **"By Meeting"** (Table)
 
-For completed items.
+See items organized by meeting.
+
+1. Add view → "Table"
+2. Name: **"By Meeting"**
+3. **Group by**: Meeting
+4. **Filter**:
+   - Status → Is not → Completed
+5. **Sort**: Priority → Descending
+
+#### View 4: **"Action Items"** (Table)
+
+Track what needs to be done.
+
+1. Add view → "Table"
+2. Name: **"Action Items"**
+3. **Filter**:
+   - Status → Is → Action Required
+   - OR
+   - Status → Is → In Discussion
+4. **Sort**: Priority → Descending
+5. **Properties shown**:
+   - Agenda Item
+   - Meeting (relation)
+   - Status
+   - Priority
+   - Owner/Assignee
+   - Decision/Outcome
+
+#### View 5: **"Archive"** (Table)
+
+Completed items.
 
 1. Add view → "Table"
 2. Name: **"Archive"**
@@ -160,140 +248,162 @@ For completed items.
    - Status → Is → Completed
    - OR
    - Status → Is → Decided
-4. **Sort**:
-   - Completed Date → Descending
-5. **Collapse** this view by default to keep the page clean
-
-### View 5: **"By Category"** (Table)
-
-Organize by topic area.
-
-1. Add view → "Table"
-2. Name: **"By Category"**
-3. **Group by**: Category
-4. **Filter**:
-   - Status → Is not → Completed (optional - only show active items)
-5. **Sort**: Priority → Descending
+4. **Sort**: Completed Date → Descending
 
 ---
 
-## 🎨 Step 4: Customize Display
+## 🎨 Step 5: Organize the Page
 
-### Make it Readable:
+### Recommended Layout:
 
-1. **Hide archived view by default**:
-   - Click the "Archive" view → "..." → Toggle it closed
-   - It will show "# items" and users can click to expand
+1. **Top section**: Meetings database
+   - Set to "Timeline" or "Table" view
+   - This shows your meeting schedule
+   - Click any meeting to see its linked agenda items
 
-2. **Add view descriptions**:
-   - For each view, click "..." → "Edit view"
-   - Add a description like:
-     - Active Agenda: "Current and upcoming items for discussion"
-     - Archive: "Completed and decided items from past meetings"
+2. **Bottom section**: Agenda Items database
+   - Set to "All Items" or "By Status" view
+   - This gives you the flat view of all items
+   - Filter, search, and manage items across all meetings
 
-3. **Adjust column widths**:
-   - Drag column borders to make text readable
-   - Make "Agenda Item" wider (300-400px)
-   - Keep "Status" narrow (100px)
+### Make It Readable:
 
-4. **Add database description**:
-   - Click the database title → Add description
-   - Example: "Central hub for organizing All Staff meeting agendas, tracking discussion items, and recording decisions."
+- **Collapse Archive views** by default
+- **Adjust column widths**: Make "Agenda Item" and "Meeting Name" wider
+- **Hide less important properties**: Use view settings to show only key fields
+- **Add descriptions** to each view explaining its purpose
 
 ---
 
-## 📝 Step 5: Using the Database
+## 📝 Step 6: Using the Two-Database System
 
-### For Upcoming Meetings:
+### Creating a New Meeting:
 
-1. **Create new items**:
-   - Click "+ New" in the database
-   - Fill in:
-     - Agenda Item: Topic name
-     - Meeting Date: When it will be discussed
-     - Status: "To Discuss"
-     - Category: Relevant tags
-     - Facilitator: Who's leading the meeting
+1. Go to **Meetings database**
+2. Click "+ New"
+3. Fill in:
+   - Meeting Name: "All Staff - [Date]"
+   - Meeting Date: The date
+   - Facilitator: Select person
+   - Status: Upcoming
 
-2. **Prepare agenda**:
-   - Use "Upcoming Meetings" view
-   - Items are grouped by meeting date
-   - Reorder items by dragging
+### Adding Agenda Items:
+
+1. Go to **Agenda Items database**
+2. Click "+ New"
+3. Fill in:
+   - Agenda Item: Topic name
+   - **Meeting**: Select which meeting (IMPORTANT!)
+   - Status: To Discuss or Backlog
+   - Category: Relevant tags
+   - Priority: High/Medium/Low
+
+### Viewing Items by Meeting:
+
+**Option A**: Open a meeting page
+- Click any meeting in the Meetings database
+- Scroll to see "Agenda Items" section
+- All linked items are listed there
+
+**Option B**: Use the "By Meeting" view
+- Go to Agenda Items database
+- Switch to "By Meeting" view
+- Items are grouped by their meeting
+
+### Viewing All Items Flat:
+
+- Go to Agenda Items database
+- Use "All Items" view
+- See every item across all meetings with statuses
+- Filter, sort, and search as needed
 
 ### During Meetings:
 
-1. **Switch to "This Week" board view**
-2. **Move items** through statuses:
-   - Start: To Discuss → In Discussion
-   - End: In Discussion → Decided or Action Required
-
-3. **Capture outcomes**:
-   - Fill in "Decision/Outcome" field
-   - Assign "Owner/Assignee" for action items
-   - Add link to "AI Meeting Notes"
+1. Open the meeting page from Meetings database
+2. See all agenda items for that meeting
+3. Update status: To Discuss → In Discussion → Decided/Action Required
+4. Fill in Decision/Outcome
+5. Assign Owner/Assignee for action items
+6. Add link to AI Meeting Notes (on the meeting page)
 
 ### After Meetings:
 
-1. **Mark completed items**:
-   - Change Status to "Completed"
-   - Fill in "Completed Date" with today's date
-   - Items automatically move to Archive (after 30 days)
-
-2. **Follow up on actions**:
-   - Check items with Status = "Action Required"
-   - Update status as work progresses
+1. Update meeting status to "Completed"
+2. Mark agenda items as "Completed" or "Action Required"
+3. Set Completed Date for closed items
+4. Items automatically archive after 30 days
 
 ---
 
-## 💡 Best Practices
+## 💡 Benefits of This Structure
 
-### Keep It Clean:
-- Move old completed items to "Completed" status so they filter out
-- Use the Archive view to review past decisions
-- Delete spam/duplicate items
+### Separation of Concerns:
+- **Meeting logistics** (date, facilitator) live in Meetings DB
+- **Discussion topics** (items, statuses) live in Agenda Items DB
+- Clean, organized, no duplication
 
-### Use Categories Consistently:
-- Tag items with all relevant categories
-- This helps with filtering and finding related items
+### Flexible Views:
+- **Meeting-centric**: "What's on the agenda for Monday?"
+- **Item-centric**: "What's the status of the budget discussion?"
+- **Action-centric**: "What needs to be done?"
 
-### Meeting Prep:
-- Add items to "Backlog" status throughout the week
-- Move to "To Discuss" when planning the agenda
-- Prioritize high-priority items
+### Better Filtering:
+- Archive old meetings without losing access to items
+- See all "In Discussion" items across all meetings
+- Track action items by owner/assignee
 
-### Archive Management:
-- Items older than 30 days + Completed automatically hide from main view
-- You can still search and find them in Archive
-- Consider reviewing quarterly: keep important decisions, delete redundant items
+### Scalability:
+- Add unlimited meetings without cluttering item list
+- One meeting can have many items
+- Search and filter across entire history
+
+---
+
+## 🎯 Workflow Example
+
+### Week Before Meeting:
+
+1. Create new meeting in Meetings DB
+2. Add agenda items in Agenda Items DB, link to meeting
+3. Use "By Meeting" view to review what's scheduled
+
+### During Meeting:
+
+1. Open meeting page
+2. Work through agenda items in order
+3. Update statuses as you go
+4. Capture decisions in Decision/Outcome field
+5. Assign action items to owners
+
+### After Meeting:
+
+1. Mark meeting as "Completed"
+2. Link AI meeting notes to meeting
+3. Check "Action Items" view for follow-ups
+4. Items auto-archive after 30 days once completed
 
 ---
 
 ## 🚀 Quick Reference
 
-### Status Workflow:
+### Status Workflow for Agenda Items:
 ```
 Backlog → To Discuss → In Discussion → Decided/Action Required → Completed
 ```
 
-### When to Use Each Status:
-- **Backlog**: Items submitted but not yet scheduled
-- **To Discuss**: On the agenda for upcoming meeting
-- **In Discussion**: Actively being discussed in the current meeting
-- **Decided**: Discussion complete, decision made, no further action
-- **Action Required**: Decision made, someone needs to do something
-- **Completed**: Action finished or item fully resolved
+### Status Workflow for Meetings:
+```
+Upcoming → In Progress → Completed
+```
 
----
+### Key Relations:
+```
+Meetings (1) ←→ (Many) Agenda Items
+```
 
-## 🎯 You're Done!
-
-Your All Staff Meetings Hub is ready to use. Start by:
-1. Adding your next meeting date and facilitator
-2. Creating a few agenda items
-3. Tagging them with categories
-4. Trying out different views
-
-The database will grow and become more valuable over time as it builds up a history of discussions and decisions.
+### Best Views:
+- **Meetings**: Timeline (group by status)
+- **Agenda Items**: All Items (flat list) or By Status (board)
 
 ---
 
@@ -301,6 +411,19 @@ The database will grow and become more valuable over time as it builds up a hist
 
 If you want to automate this with the API integration:
 1. Create a Notion integration at https://www.notion.so/my-integrations
-2. Share your database with the integration
+2. Share both databases with the integration
 3. Run the automated setup script (see README.md)
 
+---
+
+## 🎉 You're Done!
+
+Your two-database All Staff Meetings Hub is ready! This structure gives you:
+
+- ✅ Meeting-centric organization
+- ✅ Flat item list across all meetings
+- ✅ Flexible filtering and views
+- ✅ Clean separation of meeting logistics and discussion topics
+- ✅ Smart archiving and rollup statistics
+
+Start by creating your next meeting and adding a few agenda items!

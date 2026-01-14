@@ -15,25 +15,25 @@ async function updateStatus() {
   try {
     validateConfig();
 
-    const databaseId = process.env.NOTION_DATABASE_ID;
-    if (!databaseId) {
-      console.error('❌ NOTION_DATABASE_ID not found in .env file.');
-      console.error('   Run `npm run setup` first to create the database.\n');
+    const agendaItemsDatabaseId = process.env.NOTION_AGENDA_ITEMS_DATABASE_ID;
+    if (!agendaItemsDatabaseId) {
+      console.error('❌ NOTION_AGENDA_ITEMS_DATABASE_ID not found in .env file.');
+      console.error('   Run `npm run setup` first to create the databases.\n');
       process.exit(1);
     }
 
     const notion = new Client({ auth: config.notionToken });
 
     // First, fetch recent items from the database
-    console.log('📋 Fetching recent items...\n');
+    console.log('📋 Fetching recent agenda items...\n');
 
     const response = await notion.databases.query({
-      database_id: databaseId,
+      database_id: agendaItemsDatabaseId,
       page_size: 20,
       sorts: [
         {
-          property: 'Meeting Date',
-          direction: 'descending',
+          property: 'Status',
+          direction: 'ascending',
         },
       ],
     });
@@ -48,10 +48,11 @@ async function updateStatus() {
       const title =
         page.properties['Agenda Item']?.title?.[0]?.text?.content || 'Untitled';
       const status = page.properties.Status?.select?.name || 'No status';
-      const date = page.properties['Meeting Date']?.date?.start || 'No date';
+      const priority = page.properties.Priority?.select?.name || '';
+      const priorityEmoji = priority === 'High' ? '🔴' : priority === 'Medium' ? '🟡' : priority === 'Low' ? '🟢' : '';
 
       return {
-        name: `${title} | ${status} | ${date}`,
+        name: `${priorityEmoji} ${title} | ${status}`,
         value: page.id,
         short: title,
       };

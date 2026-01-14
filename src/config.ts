@@ -8,8 +8,11 @@ export const config = {
   workspaceId: process.env.NOTION_WORKSPACE_ID || '244adf27-37fa-4f63-b90f-ab12e4c643bb',
 };
 
-export const DATABASE_TITLE = 'All Staff Meetings Hub';
+// Database titles
+export const MEETINGS_DATABASE_TITLE = 'All Staff Meetings';
+export const AGENDA_ITEMS_DATABASE_TITLE = 'Agenda Items';
 
+// Categories for agenda items
 export const CATEGORIES = [
   'Internal',
   'Staff Development',
@@ -23,6 +26,20 @@ export const CATEGORIES = [
   'Volunteers',
 ];
 
+// Meeting statuses
+export const MEETING_STATUSES = {
+  UPCOMING: 'Upcoming',
+  IN_PROGRESS: 'In Progress',
+  COMPLETED: 'Completed',
+};
+
+export const MEETING_STATUS_COLORS = {
+  [MEETING_STATUSES.UPCOMING]: 'blue' as const,
+  [MEETING_STATUSES.IN_PROGRESS]: 'yellow' as const,
+  [MEETING_STATUSES.COMPLETED]: 'green' as const,
+};
+
+// Agenda item statuses
 export const STATUSES = {
   BACKLOG: 'Backlog',
   TO_DISCUSS: 'To Discuss',

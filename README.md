@@ -1,73 +1,104 @@
 # All Staff Meetings Hub 🗓️
 
-A comprehensive Notion database system for managing All Staff meetings, agenda items, discussions, and decisions.
+A comprehensive **two-database Notion system** for managing All Staff meetings with separate databases for meeting logistics and agenda items.
 
-## 🎯 Features
+## 🎯 What's New: Two-Database Structure
 
-- **Meeting Management**: Track meeting dates and facilitators
-- **Agenda Items**: Organize topics with clear status tracking
-- **Status Workflow**: Move items through Backlog → To Discuss → In Discussion → Decided/Action Required → Completed
-- **Category Tags**: Organize by Internal, Staff Development, Events, Institute, OIT U, Digital Corps, Partnership Engagement, Revenue, Community, Volunteers
-- **Smart Views**: Multiple perspectives (Active Agenda, Upcoming, Archive, etc.)
-- **AI Notes Integration**: Link to AI-generated meeting summaries
-- **Archive System**: Auto-hide completed items older than 30 days
+This system uses **two related Notion databases** for maximum flexibility:
+
+### 1. **Meetings Database** 📅
+- Meeting dates and facilitators
+- AI meeting notes links
+- Meeting status (Upcoming, In Progress, Completed)
+- Rollup statistics (# items, # completed)
+
+### 2. **Agenda Items Database** 📝
+- Individual discussion topics
+- Status tracking (Backlog → To Discuss → In Discussion → Decided/Action Required → Completed)
+- Categories, priorities, and owners
+- Linked to specific meetings via relations
+
+### Why Two Databases?
+
+**Meeting-Centric View**: Click any meeting to see all its agenda items nested inside
+**Flat Item View**: See all agenda items across all meetings with statuses at a glance
+**Better Organization**: Separate meeting logistics from discussion topics
+**Flexible Filtering**: Archive old meetings without losing access to agenda items
+**Smart Rollups**: Track completion statistics automatically
+
+---
 
 ## 🚀 Quick Start
 
-You have **two options** for setting up your database:
+You have **two options** for setting up your databases:
 
 ### Option 1: Manual Setup (No API Required) ⚡
 
 **Best for**: Getting started immediately without API permissions
 
 1. Open [`MANUAL_SETUP.md`](./MANUAL_SETUP.md)
-2. Follow the step-by-step instructions
-3. Build the database directly in Notion
+2. Follow the step-by-step instructions to create both databases
+3. Set up the relation between them
+4. Configure views
 
-**Time**: ~15-20 minutes
+**Time**: ~20-25 minutes
 
 ### Option 2: Automated Setup (API Integration) 🤖
 
 **Best for**: Automation, CLI management, and ongoing maintenance
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+#### Step 1: Install Dependencies
 
-2. **Create a Notion Integration**:
-   - Go to https://www.notion.so/my-integrations
-   - Click "New integration"
-   - Name: "All Staff Meetings Manager"
-   - Select workspace: "Out in Tech"
-   - Permissions: ✅ Read, Update, Insert content
-   - Copy the "Internal Integration Token"
+```bash
+npm install
+```
 
-3. **Share your page with the integration**:
-   - Go to: https://www.notion.so/All-Staff-draft-2e78dac1d83e805fb8c6f28f9b1b456f
-   - Click "..." → "Connections" → Add your integration
+#### Step 2: Create Notion Integration
 
-4. **Configure environment**:
-   ```bash
-   cp .env.example .env
-   ```
+1. Go to https://www.notion.so/my-integrations
+2. Click "New integration"
+3. **Name**: "All Staff Meetings Manager"
+4. **Workspace**: Select "Out in Tech"
+5. **Capabilities**: ✅ Read content, Update content, Insert content
+6. Copy the "Internal Integration Token" (starts with `secret_...`)
 
-   Edit `.env` and add your token:
-   ```env
-   NOTION_TOKEN=secret_your_actual_token_here
-   ```
+#### Step 3: Share Page with Integration
 
-5. **Run setup script**:
-   ```bash
-   npm run setup
-   ```
+1. Go to: https://www.notion.so/All-Staff-draft-2e78dac1d83e805fb8c6f28f9b1b456f
+2. Click "..." → "Connections"
+3. Add your "All Staff Meetings Manager" integration
 
-6. **Save database ID**:
-   - Copy the database ID from the output
-   - Add it to your `.env` file:
-   ```env
-   NOTION_DATABASE_ID=your_database_id_here
-   ```
+#### Step 4: Configure Environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your token:
+```env
+NOTION_TOKEN=secret_your_actual_token_here
+```
+
+#### Step 5: Run Setup
+
+```bash
+npm run setup
+```
+
+The script will:
+- ✅ Create both databases (Meetings & Agenda Items)
+- ✅ Set up all properties
+- ✅ Create the relation between databases
+- ✅ Add rollup properties
+
+#### Step 6: Save Database IDs
+
+Copy the database IDs from the output and add to `.env`:
+
+```env
+NOTION_MEETINGS_DATABASE_ID=your_meetings_db_id_here
+NOTION_AGENDA_ITEMS_DATABASE_ID=your_agenda_items_db_id_here
+```
 
 **Time**: ~5 minutes (after getting API permissions)
 
@@ -75,36 +106,62 @@ You have **two options** for setting up your database:
 
 ## 📖 Usage
 
-### Managing Items via CLI
+### CLI Tools (Automated Setup Only)
 
-#### Add a New Agenda Item
+#### Create a New Meeting
+
+```bash
+npm run add-meeting
+```
+
+Interactive prompts:
+- Meeting name (e.g., "All Staff - Jan 20, 2026")
+- Meeting date
+- Facilitator (optional)
+- Status (Upcoming/In Progress/Completed)
+- AI notes URL (optional)
+
+**Example**:
+```
+📅 Add New Meeting
+
+? Meeting name: All Staff - Jan 20, 2026
+? Meeting date (YYYY-MM-DD): 2026-01-20
+? Facilitator email (optional):
+? Meeting status: Upcoming
+? AI Meeting Notes URL (optional):
+
+✅ Meeting created successfully!
+```
+
+#### Add Agenda Item
 
 ```bash
 npm run add-item
 ```
 
-Interactive prompts will ask for:
+Interactive prompts:
+- Select which meeting
 - Agenda item title
-- Meeting date
 - Status
 - Categories
 - Priority
-- Facilitator (optional)
+- Owner/Assignee (optional)
 - Decision/Outcome (optional)
 
 **Example**:
 ```
 📝 Add New Agenda Item
 
+? Select meeting: All Staff - Jan 20, 2026 | 2026-01-20 | Upcoming
 ? Agenda item title: Review Q2 Budget Allocation
-? Meeting date (YYYY-MM-DD): 2026-01-20
 ? Status: To Discuss
 ? Categories: Revenue, Internal
 ? Priority: High
-? Facilitator email (optional):
+? Owner/Assignee email (optional):
 ? Decision/Outcome (optional):
 
-✅ Item created successfully!
+✅ Agenda item created successfully!
 ```
 
 #### Update Item Status
@@ -113,133 +170,141 @@ Interactive prompts will ask for:
 npm run update-status
 ```
 
-- Select an item from recent items
+- Select an item from the list
 - Choose new status
 - Optionally set completed date
-- Add decision/outcome notes
+- Add/update decision notes
 
-**Example Use Cases**:
-- Move item from "To Discuss" → "In Discussion" during meeting
-- Mark item as "Decided" with outcome notes
-- Set "Action Required" and assign owner
-- Complete items and auto-archive
-
-### Using the Database in Notion
+### Using in Notion (Both Manual & Automated)
 
 #### Before Meetings:
 
-1. **Add agenda items**:
-   - Use CLI: `npm run add-item`
-   - Or manually in Notion: Click "+ New" in database
+**1. Create a meeting** (Meetings database)
+- Click "+ New"
+- Set meeting name, date, facilitator
 
-2. **Organize agenda**:
-   - Open "Upcoming Meetings" view
-   - Items are grouped by date
-   - Drag to reorder priority
+**2. Add agenda items** (Agenda Items database)
+- Click "+ New"
+- Link to the meeting
+- Set status, category, priority
 
-3. **Review priorities**:
-   - Check "By Category" view for topic distribution
-   - Filter by Priority for high-importance items
+**3. Review agenda** (Use "By Meeting" view)
+- See all items for upcoming meeting
+- Reorder by priority
 
 #### During Meetings:
 
-1. **Switch to "This Week" board view**
-2. **Move items through statuses**:
-   - Drag cards: To Discuss → In Discussion → Decided
-3. **Capture decisions**:
-   - Fill "Decision/Outcome" field
-   - Assign "Owner/Assignee" for actions
-   - Link "AI Meeting Notes"
+**1. Open the meeting page**
+- Click meeting in Meetings database
+- See all linked agenda items
+
+**2. Update statuses**
+- Move items: To Discuss → In Discussion → Decided/Action Required
+- Fill in Decision/Outcome
+- Assign owners for action items
+
+**3. Link notes**
+- Add AI Meeting Notes URL to meeting
 
 #### After Meetings:
 
-1. **Mark completed**:
-   - Use CLI: `npm run update-status`
-   - Or in Notion: Change status + add completed date
-2. **Follow up**:
-   - Review items in "Action Required" status
-   - Check "Active Agenda" for open items
+**1. Complete the meeting**
+- Set meeting status to "Completed"
+
+**2. Finalize items**
+- Mark items as Completed or Action Required
+- Set Completed Date
+
+**3. Track actions**
+- Use "Action Items" view to see what needs follow-up
 
 ---
 
 ## 🗂️ Database Structure
 
-### Properties
+### Meetings Database
+
+| Property | Type | Description |
+|----------|------|-------------|
+| **Meeting Name** | Title | Meeting identifier (e.g., "All Staff - Jan 20") |
+| **Meeting Date** | Date | When the meeting occurs |
+| **Facilitator** | Person | Who leads the meeting |
+| **Status** | Select | Upcoming, In Progress, Completed |
+| **AI Meeting Notes** | URL | Link to AI-generated summary |
+| **Agenda Items** | Relation | Linked agenda items (auto-created) |
+| **# Items** | Rollup | Count of total agenda items |
+| **# Completed** | Rollup | Count of completed items |
+
+### Agenda Items Database
 
 | Property | Type | Description |
 |----------|------|-------------|
 | **Agenda Item** | Title | The topic/issue to discuss |
-| **Meeting Date** | Date | When item will be/was discussed |
-| **Facilitator** | Person | Meeting leader |
-| **Status** | Select | Current state (Backlog → Completed) |
+| **Meeting** | Relation | Which meeting this belongs to |
+| **Status** | Select | Backlog → To Discuss → In Discussion → Decided → Action Required → Completed |
 | **Category** | Multi-select | Topic tags (Internal, Events, etc.) |
-| **Owner/Assignee** | Person | Responsible for action items |
+| **Priority** | Select | High, Medium, Low |
+| **Owner/Assignee** | Person | Who is responsible |
 | **Decision/Outcome** | Text | What was decided or accomplished |
-| **AI Meeting Notes** | URL | Link to AI-generated summary |
-| **Completed Date** | Date | When item was finished |
-| **Priority** | Select | High/Medium/Low |
+| **Completed Date** | Date | When marked complete |
 
-### Status Workflow
+### Database Relationship
 
 ```
-Backlog
-   ↓
-To Discuss (on upcoming agenda)
-   ↓
-In Discussion (active in current meeting)
-   ↓
-├─→ Decided (complete, no action needed)
-└─→ Action Required (needs follow-up)
-      ↓
-   Completed
+┌─────────────────┐          ┌──────────────────┐
+│    Meetings     │          │  Agenda Items    │
+│                 │          │                  │
+│ - Meeting Name  │ 1 ←─→ ∞  │ - Agenda Item    │
+│ - Meeting Date  │          │ - Meeting (rel)  │
+│ - Facilitator   │          │ - Status         │
+│ - Status        │          │ - Category       │
+│ - AI Notes      │          │ - Priority       │
+│ - Agenda Items  │          │ - Owner          │
+│   (relation)    │          │ - Decision       │
+└─────────────────┘          └──────────────────┘
 ```
-
-### Views
-
-#### 1. **Active Agenda** (Default)
-- **Shows**: Current and upcoming items, recently completed (< 30 days)
-- **Filters**: Excludes old completed items
-- **Sort**: By meeting date
-- **Use**: Main working view
-
-#### 2. **Upcoming Meetings**
-- **Shows**: Future meeting items
-- **Group by**: Meeting date
-- **Use**: Planning and prep
-
-#### 3. **This Week** (Board)
-- **Shows**: Items for current week
-- **Group by**: Status
-- **Use**: During meetings (Kanban style)
-
-#### 4. **Archive**
-- **Shows**: All completed/decided items
-- **Sort**: By completed date (newest first)
-- **Use**: Historical reference
-
-#### 5. **By Category**
-- **Shows**: Active items grouped by topic
-- **Group by**: Category
-- **Use**: Topic-based organization
 
 ---
 
-## 🛠️ Project Structure
+## 👁️ Recommended Views
 
-```
-notion-staff-meetings-hub/
-├── src/
-│   ├── config.ts              # Configuration and constants
-│   ├── setup-database.ts      # Initial database creation
-│   ├── add-item.ts            # CLI tool to add agenda items
-│   └── update-status.ts       # CLI tool to update item status
-├── MANUAL_SETUP.md            # Step-by-step manual instructions
-├── README.md                  # This file
-├── package.json               # Dependencies and scripts
-├── tsconfig.json              # TypeScript configuration
-├── .env.example               # Environment template
-└── .gitignore                 # Git ignore rules
-```
+### For Meetings Database:
+
+#### 1. **Timeline** (Default)
+- Group by: Status
+- Sort by: Meeting Date
+- Shows: Upcoming, In Progress, Completed sections
+
+#### 2. **Archive**
+- Filter: Status = Completed
+- Sort by: Meeting Date (descending)
+- Use: Historical reference
+
+### For Agenda Items Database:
+
+#### 1. **All Items** (Default - Flat View)
+- Filter: Exclude completed items > 30 days old
+- Sort: Priority (High first), then Status
+- Use: See everything at a glance
+
+#### 2. **By Status** (Board View)
+- Group by: Status
+- Use: Kanban-style workflow during meetings
+
+#### 3. **By Meeting**
+- Group by: Meeting (relation)
+- Filter: Active items only
+- Use: See items organized by meeting
+
+#### 4. **Action Items**
+- Filter: Status = Action Required or In Discussion
+- Sort: Priority
+- Use: Track what needs to be done
+
+#### 5. **Archive**
+- Filter: Status = Completed or Decided
+- Sort: Completed Date (descending)
+- Use: Historical reference
 
 ---
 
@@ -260,29 +325,80 @@ Your organization uses these categories:
 
 ---
 
+## 🔄 Status Workflows
+
+### Meeting Status:
+```
+Upcoming → In Progress → Completed
+```
+
+### Agenda Item Status:
+```
+Backlog
+   ↓
+To Discuss (on upcoming meeting agenda)
+   ↓
+In Discussion (active in current meeting)
+   ↓
+├─→ Decided (complete, no action needed)
+└─→ Action Required (needs follow-up)
+      ↓
+   Completed
+```
+
+---
+
 ## 💡 Best Practices
 
-### Keep It Organized:
-- ✅ Add items to "Backlog" throughout the week
-- ✅ Move to "To Discuss" when scheduling
-- ✅ Update status during meetings
-- ✅ Fill in outcomes immediately
-- ✅ Set completed date for archiving
+### Meeting Preparation:
+- ✅ Create meeting 1 week in advance
+- ✅ Add agenda items throughout the week (Backlog status)
+- ✅ Move items to "To Discuss" when finalizing agenda
+- ✅ Prioritize high-priority items
 
-### Effective Tagging:
+### During Meetings:
+- ✅ Open the meeting page to see all agenda items
+- ✅ Update status in real-time as you progress
+- ✅ Capture decisions immediately in Decision/Outcome field
+- ✅ Assign owners for action items
+
+### After Meetings:
+- ✅ Mark meeting as Completed
+- ✅ Link AI meeting notes
+- ✅ Set Completed Date on finished items
+- ✅ Review Action Items view for follow-ups
+
+### Organization:
 - 🏷️ Use multiple categories when relevant
-- 🏷️ Consistent category usage helps filtering
-- 🏷️ Priority should reflect urgency, not importance
+- 🏷️ Set priority to reflect urgency
+- 🏷️ Archive happens automatically (30 days after completion)
+- 🏷️ Use Meeting relation consistently
 
-### Archive Management:
-- 📦 Items auto-hide after 30 days + Completed status
-- 📦 Use Archive view to reference past decisions
-- 📦 Quarterly review: delete redundant items
+### Views:
+- 📊 Use "By Meeting" view when planning specific meetings
+- 📊 Use "All Items" view for cross-meeting visibility
+- 📊 Use "Action Items" view for follow-up tracking
+- 📊 Collapse Archive views to reduce clutter
 
-### Meeting Efficiency:
-- ⏰ Review "Upcoming Meetings" view before each meeting
-- ⏰ Update status in real-time during meetings
-- ⏰ Link AI notes immediately after meetings
+---
+
+## 🛠️ Project Structure
+
+```
+notion-staff-meetings-hub/
+├── src/
+│   ├── config.ts              # Configuration and constants
+│   ├── setup-databases.ts     # Creates both databases with relations
+│   ├── add-meeting.ts         # CLI: Add new meeting
+│   ├── add-item.ts            # CLI: Add agenda item
+│   └── update-status.ts       # CLI: Update item status
+├── MANUAL_SETUP.md            # Step-by-step manual instructions
+├── README.md                  # This file
+├── package.json               # Dependencies and scripts
+├── tsconfig.json              # TypeScript configuration
+├── .env.example               # Environment template
+└── .gitignore                 # Git ignore rules
+```
 
 ---
 
@@ -299,7 +415,8 @@ npm run build
 | Script | Description |
 |--------|-------------|
 | `npm run build` | Compile TypeScript to JavaScript |
-| `npm run setup` | Create the Notion database |
+| `npm run setup` | Create both Notion databases |
+| `npm run add-meeting` | Add new meeting (interactive) |
 | `npm run add-item` | Add new agenda item (interactive) |
 | `npm run update-status` | Update item status (interactive) |
 
@@ -308,10 +425,11 @@ npm run build
 Required in `.env`:
 
 ```env
-NOTION_TOKEN=secret_...              # Integration token
-NOTION_PARENT_PAGE_ID=...            # Page where database lives
-NOTION_WORKSPACE_ID=...              # Workspace ID
-NOTION_DATABASE_ID=...               # Database ID (after setup)
+NOTION_TOKEN=secret_...                    # Integration token
+NOTION_PARENT_PAGE_ID=...                  # Page where databases live
+NOTION_WORKSPACE_ID=...                    # Workspace ID
+NOTION_MEETINGS_DATABASE_ID=...            # Meetings DB ID (after setup)
+NOTION_AGENDA_ITEMS_DATABASE_ID=...        # Agenda Items DB ID (after setup)
 ```
 
 ---
@@ -320,7 +438,7 @@ NOTION_DATABASE_ID=...               # Database ID (after setup)
 
 ### "Authentication error"
 - ✓ Check `NOTION_TOKEN` in `.env`
-- ✓ Verify integration has correct permissions
+- ✓ Verify integration has correct permissions (Read, Update, Insert)
 - ✓ Ensure page is shared with integration
 
 ### "Page not found"
@@ -330,13 +448,44 @@ NOTION_DATABASE_ID=...               # Database ID (after setup)
 
 ### "Database not found"
 - ✓ Run `npm run setup` first
-- ✓ Add `NOTION_DATABASE_ID` to `.env`
-- ✓ Verify database exists in Notion
+- ✓ Add both database IDs to `.env`
+- ✓ Verify databases exist in Notion
 
-### Can't create integration
+### "No meetings found" (when adding item)
+- ✓ Create a meeting first: `npm run add-meeting`
+- ✓ Verify meeting was created in Notion
+
+### "Can't create integration"
 - 👉 See [`MANUAL_SETUP.md`](./MANUAL_SETUP.md) for manual setup
 - 👉 Contact your Notion workspace admin
 - 👉 Request integration creation permissions
+
+---
+
+## 🎯 Key Benefits of Two-Database Structure
+
+### Separation of Concerns:
+Meeting logistics (date, facilitator, notes) are separate from discussion topics (status, decisions, actions)
+
+### Flexible Views:
+- **Meeting-centric**: "What's on the agenda for Monday's meeting?"
+- **Item-centric**: "What's the status of the budget discussion?"
+- **Action-centric**: "What needs to be done this week?"
+
+### Better Filtering & Archiving:
+- Archive old meetings without losing access to agenda items
+- See all active items across multiple meetings
+- Track items by status, category, or owner regardless of meeting
+
+### Scalability:
+- Add unlimited meetings without cluttering the item list
+- One meeting can have many items
+- Search and filter across entire history
+
+### Automatic Statistics:
+- See how many items per meeting
+- Track completion rates
+- Identify meetings with outstanding actions
 
 ---
 
@@ -345,6 +494,7 @@ NOTION_DATABASE_ID=...               # Database ID (after setup)
 - [Notion API Documentation](https://developers.notion.com/)
 - [Create Integrations](https://www.notion.so/my-integrations)
 - [Notion SDK for JavaScript](https://github.com/makenotion/notion-sdk-js)
+- [Database Relations in Notion](https://www.notion.so/help/relations-and-rollups)
 
 ---
 
@@ -357,9 +507,17 @@ MIT
 ## 🎉 You're Ready!
 
 Choose your path:
-- **Manual Setup**: Open `MANUAL_SETUP.md` and follow instructions
-- **Automated Setup**: Run `npm install` → `npm run setup`
+- **Manual Setup**: Open `MANUAL_SETUP.md` and follow instructions (~20 min)
+- **Automated Setup**: Run `npm install` → `npm run setup` (~5 min with API access)
 
-Questions? Check the troubleshooting section or review the manual setup guide for detailed explanations.
+### What You'll Get:
+
+✅ **Meeting-centric organization** - Click any meeting to see its agenda
+✅ **Flat item view** - See all items across all meetings
+✅ **Status tracking** - Move items through your workflow
+✅ **Smart archiving** - Auto-hide old completed items
+✅ **Category tagging** - Organize by topic area
+✅ **Action tracking** - Never lose track of follow-ups
+✅ **Rollup statistics** - See completion rates at a glance
 
 **Happy organizing!** 🚀

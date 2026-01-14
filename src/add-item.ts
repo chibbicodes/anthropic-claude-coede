@@ -4,11 +4,11 @@ import { config, validateConfig, CATEGORIES, STATUSES, PRIORITIES } from './conf
 
 interface AddItemAnswers {
   agendaItem: string;
-  meetingDate: string;
+  meetingId: string;
   status: string;
   categories: string[];
   priority: string;
-  facilitator?: string;
+  ownerEmail?: string;
   outcome?: string;
 }
 
@@ -18,33 +18,73 @@ async function addItem() {
   try {
     validateConfig();
 
-    // Check for database ID
-    const databaseId = process.env.NOTION_DATABASE_ID;
-    if (!databaseId) {
-      console.error('❌ NOTION_DATABASE_ID not found in .env file.');
-      console.error('   Run `npm run setup` first to create the database.\n');
+    const meetingsDatabaseId = process.env.NOTION_MEETINGS_DATABASE_ID;
+    const agendaItemsDatabaseId = process.env.NOTION_AGENDA_ITEMS_DATABASE_ID;
+
+    if (!meetingsDatabaseId || !agendaItemsDatabaseId) {
+      console.error('❌ Database IDs not found in .env file.');
+      console.error('   Required: NOTION_MEETINGS_DATABASE_ID and NOTION_AGENDA_ITEMS_DATABASE_ID');
+      console.error('   Run `npm run setup` first to create the databases.\n');
       process.exit(1);
     }
 
     const notion = new Client({ auth: config.notionToken });
 
+    // Fetch recent meetings
+    console.log('📋 Fetching meetings...\n');
+
+    const meetingsResponse = await notion.databases.query({
+      database_id: meetingsDatabaseId,
+      page_size: 20,
+      sorts: [
+        {
+          property: 'Meeting Date',
+          direction: 'descending',
+        },
+      ],
+    });
+
+    if (meetingsResponse.results.length === 0) {
+      console.log('⚠️  No meetings found. Create a meeting first with: npm run add-meeting\n');
+      process.exit(0);
+    }
+
+    // Format meetings for selection
+    const meetings = meetingsResponse.results.map((page: any) => {
+      const name =
+        page.properties['Meeting Name']?.title?.[0]?.text?.content || 'Untitled Meeting';
+      const date = page.properties['Meeting Date']?.date?.start || 'No date';
+      const status = page.properties.Status?.select?.name || 'No status';
+
+      return {
+        name: `${name} | ${date} | ${status}`,
+        value: page.id,
+        short: name,
+      };
+    });
+
+    // Add option to create new meeting
+    meetings.unshift({
+      name: '➕ Create a new meeting first',
+      value: 'CREATE_NEW',
+      short: 'Create new',
+    });
+
     // Interactive prompts
     const answers = await inquirer.prompt<AddItemAnswers>([
+      {
+        type: 'list',
+        name: 'meetingId',
+        message: 'Select meeting:',
+        choices: meetings,
+        pageSize: 15,
+      },
       {
         type: 'input',
         name: 'agendaItem',
         message: 'Agenda item title:',
         validate: (input) => (input.trim() ? true : 'Title is required'),
-      },
-      {
-        type: 'input',
-        name: 'meetingDate',
-        message: 'Meeting date (YYYY-MM-DD):',
-        validate: (input) => {
-          if (!input.trim()) return 'Date is required';
-          const date = new Date(input);
-          return isNaN(date.getTime()) ? 'Invalid date format. Use YYYY-MM-DD' : true;
-        },
+        when: (answers) => answers.meetingId !== 'CREATE_NEW',
       },
       {
         type: 'list',
@@ -52,12 +92,14 @@ async function addItem() {
         message: 'Status:',
         choices: Object.values(STATUSES),
         default: STATUSES.TO_DISCUSS,
+        when: (answers) => answers.meetingId !== 'CREATE_NEW',
       },
       {
         type: 'checkbox',
         name: 'categories',
         message: 'Categories (select with space, press enter when done):',
         choices: CATEGORIES,
+        when: (answers) => answers.meetingId !== 'CREATE_NEW',
       },
       {
         type: 'list',
@@ -65,20 +107,30 @@ async function addItem() {
         message: 'Priority:',
         choices: Object.values(PRIORITIES),
         default: PRIORITIES.MEDIUM,
+        when: (answers) => answers.meetingId !== 'CREATE_NEW',
       },
       {
         type: 'input',
-        name: 'facilitator',
-        message: 'Facilitator email (optional, press enter to skip):',
+        name: 'ownerEmail',
+        message: 'Owner/Assignee email (optional, press enter to skip):',
+        when: (answers) => answers.meetingId !== 'CREATE_NEW',
       },
       {
         type: 'input',
         name: 'outcome',
         message: 'Decision/Outcome (optional, press enter to skip):',
+        when: (answers) => answers.meetingId !== 'CREATE_NEW',
       },
     ]);
 
-    console.log('\n⏳ Creating item...');
+    // Check if user wants to create a new meeting
+    if (answers.meetingId === 'CREATE_NEW') {
+      console.log('\n💡 Run this command to create a meeting first:');
+      console.log('   npm run add-meeting\n');
+      process.exit(0);
+    }
+
+    console.log('\n⏳ Creating agenda item...');
 
     // Build properties object
     const properties: any = {
@@ -91,10 +143,13 @@ async function addItem() {
           },
         ],
       },
-      'Meeting Date': {
-        date: {
-          start: answers.meetingDate,
-        },
+      // Relation to meeting
+      Meeting: {
+        relation: [
+          {
+            id: answers.meetingId,
+          },
+        ],
       },
       Status: {
         select: {
@@ -128,32 +183,43 @@ async function addItem() {
       };
     }
 
-    // Note: Facilitator would need to be looked up by user ID in a real implementation
-    // For now, we'll skip it if provided
-    if (answers.facilitator?.trim()) {
-      console.log(
-        '\n⚠️  Note: Facilitator email provided, but automatic user lookup is not yet implemented.'
-      );
-      console.log('   You can manually add the facilitator in Notion.');
+    // Add owner if provided
+    if (answers.ownerEmail?.trim()) {
+      try {
+        properties['Owner/Assignee'] = {
+          people: [
+            {
+              object: 'user',
+              email: answers.ownerEmail.trim(),
+            },
+          ],
+        };
+      } catch (err) {
+        console.log('\n⚠️  Note: Could not add owner. You can add them manually in Notion.');
+      }
     }
 
     // Create the page
     const page = await notion.pages.create({
       parent: {
-        database_id: databaseId,
+        database_id: agendaItemsDatabaseId,
       },
       properties,
     });
 
-    console.log('✅ Item created successfully!');
+    console.log('✅ Agenda item created successfully!');
     console.log(`🔗 ${page.url}\n`);
   } catch (error: any) {
-    console.error('❌ Error creating item:', error.message);
+    console.error('❌ Error creating agenda item:', error.message);
 
     if (error.code === 'unauthorized') {
       console.error('\n🔐 Authentication error. Please check your NOTION_TOKEN.\n');
     } else if (error.code === 'object_not_found') {
-      console.error('\n🔍 Database not found. Please check your NOTION_DATABASE_ID.\n');
+      console.error('\n🔍 Database not found. Run npm run setup first.\n');
+    } else if (error.code === 'validation_error') {
+      console.error('\n⚠️  Validation error. Please check:');
+      console.error('   - Owner email is valid and exists in workspace');
+      console.error('   - All field values are valid\n');
     }
 
     throw error;

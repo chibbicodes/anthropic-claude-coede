@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "setup": "npm run build && node dist/setup-database.js",
+    "setup": "npm run build && node dist/setup-databases.js",
+    "add-meeting": "npm run build && node dist/add-meeting.js",
     "add-item": "npm run build && node dist/add-item.js",
     "update-status": "npm run build && node dist/update-status.js",
     "dev": "ts-node"
