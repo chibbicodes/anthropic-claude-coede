@@ -23,6 +23,11 @@ export class StorageService {
         // Perform migrations if needed
       }
 
+      // Ensure income array exists for backwards compatibility
+      if (!data.income) {
+        data.income = []
+      }
+
       return data
     } catch (error) {
       console.error('Error loading data from localStorage:', error)
@@ -144,6 +149,7 @@ export class StorageService {
           accounts: [...existing.accounts, ...importedData.accounts],
           transactions: [...existing.transactions, ...importedData.transactions],
           categories: [...existing.categories, ...importedData.categories],
+          income: [...(existing.income || []), ...(importedData.income || [])],
           incomeSources: [...existing.incomeSources, ...importedData.incomeSources],
           autoCategorization: [
             ...existing.autoCategorization,
@@ -182,6 +188,7 @@ export class StorageService {
       accounts: [],
       transactions: [],
       categories: [],
+      income: [],
       incomeSources: [],
       autoCategorization: [],
       settings: {
@@ -269,6 +276,7 @@ export class StorageService {
       accounts: data.accounts.filter((a) => a.budgetType !== budgetType),
       transactions: data.transactions.filter((t) => t.budgetType !== budgetType),
       categories: data.categories.filter((c) => c.budgetType !== budgetType),
+      income: (data.income || []).filter((i) => i.budgetType !== budgetType),
       incomeSources: data.incomeSources.filter((i) => i.budgetType !== budgetType),
       autoCategorization: data.autoCategorization.filter(
         (r) => r.budgetType !== budgetType && r.budgetType !== 'both'

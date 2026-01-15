@@ -30,6 +30,7 @@ export interface Account {
   paymentDueDate?: string // Day of month (1-31) or ISO date
   minimumPayment?: number
   websiteUrl?: string // Bill pay URL
+  billPayWebsite?: string // Alternative bill pay URL field
   notes?: string
   createdAt: string
   updatedAt: string
@@ -137,6 +138,19 @@ export type BusinessIncomeType =
   | 'services'
   | 'other'
 
+// Simplified Income type for easier usage
+export interface Income {
+  id: string
+  source: string // Income source name
+  budgetType: BudgetType
+  client?: string // For business income - client/customer name
+  expectedAmount?: number
+  isRecurring: boolean // Monthly recurring or one-time
+  expectedDate?: string // ISO date string
+  createdAt?: string
+  updatedAt?: string
+}
+
 export interface IncomeSource {
   id: string
   name: string
@@ -209,7 +223,8 @@ export interface AppData {
   accounts: Account[]
   transactions: Transaction[]
   categories: Category[]
-  incomeSources: IncomeSource[]
+  income: Income[] // Simplified income tracking
+  incomeSources: IncomeSource[] // Kept for backwards compatibility
   autoCategorization: AutoCategorizationRule[]
   settings: AppSettings
   version: string // For data migration
@@ -348,6 +363,9 @@ export interface BudgetContextState {
   deleteCategory: (id: string) => void
 
   // Income operations
+  addIncome: (income: Omit<Income, 'id' | 'createdAt' | 'updatedAt'>) => void
+  updateIncome: (id: string, updates: Partial<Income>) => void
+  deleteIncome: (id: string) => void
   addIncomeSource: (income: Omit<IncomeSource, 'id' | 'createdAt' | 'updatedAt'>) => void
   updateIncomeSource: (id: string, updates: Partial<IncomeSource>) => void
   deleteIncomeSource: (id: string) => void
