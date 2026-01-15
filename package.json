@@ -1,33 +1,44 @@
 {
-  "name": "notion-staff-meetings-hub",
+  "name": "dual-budget-tracker",
   "version": "1.0.0",
-  "description": "Central hub for managing All Staff meetings in Notion with agenda items, statuses, and meeting notes",
-  "main": "dist/index.js",
+  "description": "Comprehensive Personal & Business Budget Tracker with dual-budget support",
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "setup": "npm run build && node dist/setup-databases.js",
-    "add-meeting": "npm run build && node dist/add-meeting.js",
-    "add-item": "npm run build && node dist/add-item.js",
-    "update-status": "npm run build && node dist/update-status.js",
-    "dev": "ts-node"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx"
   },
   "keywords": [
-    "notion",
-    "meetings",
-    "agenda",
-    "staff-meetings"
+    "budget",
+    "finance",
+    "tracker",
+    "household",
+    "business"
   ],
-  "author": "Out in Tech",
+  "author": "",
   "license": "MIT",
   "dependencies": {
-    "@notionhq/client": "^2.2.15",
-    "dotenv": "^16.4.5",
-    "inquirer": "^9.2.12"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.0",
+    "recharts": "^2.10.3",
+    "date-fns": "^3.0.6",
+    "lucide-react": "^0.309.0"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.7",
-    "@types/node": "^20.11.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
   }
 }
