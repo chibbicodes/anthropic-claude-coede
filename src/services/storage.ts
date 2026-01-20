@@ -1,4 +1,4 @@
-import type { AppData, BudgetType } from '../types'
+import type { AppData, BudgetType, HouseholdBudgetTargets, BusinessBudgetTargets } from '../types'
 
 const STORAGE_KEY = 'dual-budget-tracker-data'
 const CURRENT_VERSION = '1.0.0'
@@ -79,7 +79,7 @@ export class StorageService {
       settings: {
         ...data.settings,
         // Include only household-specific settings
-        businessTargets: undefined as any,
+        businessTargets: undefined as unknown as BusinessBudgetTargets,
       },
       version: CURRENT_VERSION,
     }
@@ -108,7 +108,7 @@ export class StorageService {
       settings: {
         ...data.settings,
         // Include only business-specific settings
-        householdTargets: undefined as any,
+        householdTargets: undefined as unknown as HouseholdBudgetTargets,
       },
       version: CURRENT_VERSION,
     }
@@ -168,15 +168,16 @@ export class StorageService {
   /**
    * Validate app data structure
    */
-  private static isValidAppData(data: any): data is AppData {
+  private static isValidAppData(data: unknown): data is AppData {
+    if (!data || typeof data !== 'object') return false
+    const obj = data as Record<string, unknown>
     return (
-      data &&
-      Array.isArray(data.accounts) &&
-      Array.isArray(data.transactions) &&
-      Array.isArray(data.categories) &&
-      Array.isArray(data.incomeSources) &&
-      Array.isArray(data.autoCategorization) &&
-      typeof data.settings === 'object'
+      Array.isArray(obj.accounts) &&
+      Array.isArray(obj.transactions) &&
+      Array.isArray(obj.categories) &&
+      Array.isArray(obj.incomeSources) &&
+      Array.isArray(obj.autoCategorization) &&
+      typeof obj.settings === 'object'
     )
   }
 

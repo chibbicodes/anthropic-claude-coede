@@ -312,7 +312,7 @@ export default function Accounts() {
 // Account Form Component
 interface AccountFormProps {
   account?: Account
-  onSubmit: (account: any) => void
+  onSubmit: (account: Omit<Account, 'id' | 'createdAt' | 'updatedAt'>) => void
   onCancel: () => void
   defaultBudgetType: BudgetType
 }

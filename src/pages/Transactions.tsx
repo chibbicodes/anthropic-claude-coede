@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { formatCurrency } from '../utils/calculations'
 import { format } from 'date-fns'
-import type { Transaction, BudgetType, Account } from '../types'
+import type { Transaction, BudgetType, Account, Category } from '../types'
 
 type BudgetFilter = 'household' | 'business' | 'all'
 
@@ -492,8 +492,8 @@ export default function Transactions() {
 interface TransactionFormProps {
   transaction?: Transaction
   accounts: Account[]
-  categories: any[]
-  onSubmit: (transaction: any) => void
+  categories: Category[]
+  onSubmit: (transaction: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => void
   onCancel: () => void
   defaultBudgetType: BudgetType
 }

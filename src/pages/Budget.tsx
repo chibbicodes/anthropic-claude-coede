@@ -10,6 +10,27 @@ export default function Budget() {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
   const [editValue, setEditValue] = useState('')
 
+  const budgetType = currentView === 'combined' ? 'household' : (currentView as BudgetType)
+
+  // Calculate budget summary (hooks must be called before any early returns)
+  const budgetSummary = useMemo(
+    () => calculateBudgetSummary(appData.transactions, appData.categories, budgetType),
+    [appData.transactions, appData.categories, budgetType]
+  )
+
+  // Get buckets for this budget type
+  const buckets = useMemo(() => {
+    const allBuckets = getAllBuckets()
+    return budgetType === 'household' ? allBuckets.household : allBuckets.business
+  }, [budgetType])
+
+  // Calculate total budgeted amount
+  const totalBudgeted = useMemo(() => {
+    return appData.categories
+      .filter((c) => c.budgetType === budgetType)
+      .reduce((sum, c) => sum + c.monthlyBudget, 0)
+  }, [appData.categories, budgetType])
+
   // Budget page doesn't support combined view
   if (currentView === 'combined') {
     return (
@@ -37,27 +58,6 @@ export default function Budget() {
       </div>
     )
   }
-
-  const budgetType = currentView as BudgetType
-
-  // Calculate budget summary
-  const budgetSummary = useMemo(
-    () => calculateBudgetSummary(appData.transactions, appData.categories, budgetType),
-    [appData.transactions, appData.categories, budgetType]
-  )
-
-  // Get buckets for this budget type
-  const buckets = useMemo(() => {
-    const allBuckets = getAllBuckets()
-    return budgetType === 'household' ? allBuckets.household : allBuckets.business
-  }, [budgetType])
-
-  // Calculate total budgeted amount
-  const totalBudgeted = useMemo(() => {
-    return appData.categories
-      .filter((c) => c.budgetType === budgetType)
-      .reduce((sum, c) => sum + c.monthlyBudget, 0)
-  }, [appData.categories, budgetType])
 
   const handleStartEdit = (categoryId: string, currentBudget: number) => {
     setEditingCategory(categoryId)

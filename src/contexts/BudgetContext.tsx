@@ -117,6 +117,41 @@ export function BudgetProvider({ children }: { children: React.ReactNode }) {
   // Transaction Operations
   // ============================================================================
 
+  const autoCategorizeTransaction = useCallback((description: string, budgetType: string): string => {
+    const lowerDesc = description.toLowerCase()
+
+    // Check active rules first
+    for (const rule of appData.autoCategorization) {
+      if (!rule.isActive) continue
+      if (rule.budgetType !== budgetType && rule.budgetType !== 'both') continue
+
+      const pattern = rule.caseSensitive ? rule.vendorPattern : rule.vendorPattern.toLowerCase()
+      const searchIn = rule.caseSensitive ? description : lowerDesc
+
+      if (searchIn.includes(pattern)) {
+        return rule.categoryId
+      }
+    }
+
+    // Check category auto-categorization patterns
+    for (const category of appData.categories) {
+      if (category.budgetType !== budgetType) continue
+      if (!category.isActive) continue
+
+      for (const pattern of category.autoCategorization) {
+        const patternStr = pattern.caseSensitive ? pattern.pattern : pattern.pattern.toLowerCase()
+        const searchIn = pattern.caseSensitive ? description : lowerDesc
+
+        if (searchIn.includes(patternStr)) {
+          return category.id
+        }
+      }
+    }
+
+    // Return uncategorized
+    return 'uncategorized'
+  }, [appData.autoCategorization, appData.categories])
+
   const addTransaction = useCallback(
     (transaction: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => {
       const now = new Date().toISOString()
@@ -156,43 +191,8 @@ export function BudgetProvider({ children }: { children: React.ReactNode }) {
         })
       }
     },
-    [appData.categories, appData.accounts, updateAccount]
+    [appData.categories, appData.accounts, updateAccount, autoCategorizeTransaction]
   )
-
-  const autoCategorizeTransaction = (description: string, budgetType: string): string => {
-    const lowerDesc = description.toLowerCase()
-
-    // Check active rules first
-    for (const rule of appData.autoCategorization) {
-      if (!rule.isActive) continue
-      if (rule.budgetType !== budgetType && rule.budgetType !== 'both') continue
-
-      const pattern = rule.caseSensitive ? rule.vendorPattern : rule.vendorPattern.toLowerCase()
-      const searchIn = rule.caseSensitive ? description : lowerDesc
-
-      if (searchIn.includes(pattern)) {
-        return rule.categoryId
-      }
-    }
-
-    // Check category auto-categorization patterns
-    for (const category of appData.categories) {
-      if (category.budgetType !== budgetType) continue
-      if (!category.isActive) continue
-
-      for (const pattern of category.autoCategorization) {
-        const patternStr = pattern.caseSensitive ? pattern.pattern : pattern.pattern.toLowerCase()
-        const searchIn = pattern.caseSensitive ? description : lowerDesc
-
-        if (searchIn.includes(patternStr)) {
-          return category.id
-        }
-      }
-    }
-
-    // Return uncategorized
-    return 'uncategorized'
-  }
 
   const updateTransaction = useCallback(
     (id: string, updates: Partial<Transaction>) => {
