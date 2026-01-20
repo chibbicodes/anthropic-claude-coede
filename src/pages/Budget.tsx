@@ -91,27 +91,27 @@ export default function Budget() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm font-medium text-gray-600">
-            {budgetType === 'household' ? 'Income This Month' : 'Revenue This Month'}
-          </p>
+          <p className="text-sm font-medium text-gray-600">Total Income</p>
           <p className="text-2xl font-bold text-green-600 mt-2">
             {formatCurrency(budgetSummary.totalIncome)}
           </p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm font-medium text-gray-600">
-            {budgetType === 'household' ? 'Spent This Month' : 'Expenses This Month'}
+          <p className="text-sm font-medium text-gray-600">Total Budgeted</p>
+          <p className="text-2xl font-bold text-gray-900 mt-2">
+            {formatCurrency(totalBudgeted)}
           </p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="text-sm font-medium text-gray-600">Actual Spent</p>
           <p className="text-2xl font-bold text-red-600 mt-2">
             {formatCurrency(budgetSummary.totalExpenses)}
           </p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm font-medium text-gray-600">
-            {budgetType === 'household' ? 'Left to Spend' : 'Net Income'}
-          </p>
+          <p className="text-sm font-medium text-gray-600">Remaining</p>
           <p
             className={`text-2xl font-bold mt-2 ${
               budgetSummary.remainingBudget >= 0 ? 'text-green-600' : 'text-red-600'
