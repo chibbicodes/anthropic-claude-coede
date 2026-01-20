@@ -211,15 +211,15 @@ export default function Projects() {
                 {project.budgetType === 'household' && budget > 0 && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Budget:</span>
+                      <span className="text-gray-600">Budgeted:</span>
                       <span className="font-medium text-gray-900">${budget.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Spent:</span>
+                      <span className="text-gray-600">Used so far:</span>
                       <span className="font-medium text-gray-900">${spent.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Remaining:</span>
+                      <span className="text-gray-600">Still available:</span>
                       <span className={`font-medium ${remaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         ${remaining.toFixed(2)}
                       </span>
@@ -418,7 +418,7 @@ export default function Projects() {
 
             {selectedProject.budgetType === 'household' && selectedProject.budget && selectedProject.budget > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Budget Summary</h3>
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Budget Tracking</h3>
                 <div className="space-y-3">
                   {(() => {
                     const spent = calculateProjectSpent(selectedProject.id)
@@ -429,15 +429,15 @@ export default function Projects() {
                     return (
                       <>
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Budget:</span>
+                          <span className="text-gray-600">Budgeted:</span>
                           <span className="font-medium text-gray-900">${budget.toFixed(2)}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Spent:</span>
+                          <span className="text-gray-600">Used so far:</span>
                           <span className="font-medium text-gray-900">${spent.toFixed(2)}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Remaining:</span>
+                          <span className="text-gray-600">Still available:</span>
                           <span className={`font-medium ${remaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                             ${remaining.toFixed(2)}
                           </span>
