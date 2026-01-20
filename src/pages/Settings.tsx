@@ -198,6 +198,25 @@ export default function Settings() {
               <p className="text-sm text-gray-500 mt-1">Delete budget data permanently</p>
             </div>
             <div className="p-6 space-y-4">
+              {/* Clear App Cache */}
+              <div className="pb-4 border-b border-gray-200">
+                <button
+                  onClick={() => {
+                    if (confirm('Clear app cache and reload? This will refresh your app data structure but won\'t delete your data.')) {
+                      localStorage.clear()
+                      window.location.reload()
+                    }
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors"
+                >
+                  <AlertTriangle className="h-4 w-4" />
+                  Clear App Cache & Reload
+                </button>
+                <p className="text-sm text-gray-500 mt-2">
+                  If you're seeing outdated labels or UI, this will clear the browser cache and reload the app with fresh data structure.
+                </p>
+              </div>
+
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => handleClearBudgetType('household')}
