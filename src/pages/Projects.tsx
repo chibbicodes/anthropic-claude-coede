@@ -116,7 +116,11 @@ export default function Projects() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
           <p className="text-gray-600 mt-1">
-            Track and manage your {currentView === 'household' ? 'household' : currentView === 'business' ? 'business' : ''} projects
+            {currentView === 'household'
+              ? 'Track and manage your household projects and budgets'
+              : currentView === 'business'
+              ? 'Track profitability by performance, craft project, or event'
+              : 'Track and manage all your projects'}
           </p>
         </div>
         <button
