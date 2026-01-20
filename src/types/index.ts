@@ -49,6 +49,7 @@ export interface Transaction {
   bucketId?: string // Auto-assigned based on category
   budgetType: BudgetType // Auto-assigned from account, but can be overridden
   accountId: string
+  projectId?: string // Optional project tracking
   taxDeductible: boolean // Primarily for business, available for household
   notes?: string
   createdAt: string
@@ -226,6 +227,7 @@ export interface AppData {
   income: Income[] // Simplified income tracking
   incomeSources: IncomeSource[] // Kept for backwards compatibility
   autoCategorization: AutoCategorizationRule[]
+  projects: Project[]
   settings: AppSettings
   version: string // For data migration
 }
@@ -295,6 +297,49 @@ export interface CategoryExpense {
   amount: number
   percentOfTotal: number
   taxDeductible: boolean
+}
+
+// ============================================================================
+// Project Types
+// ============================================================================
+
+export type ProjectStatus = 'planned' | 'in_progress' | 'completed' | 'on_hold'
+
+export interface Project {
+  id: string
+  name: string
+  budgetType: BudgetType
+  status: ProjectStatus
+  budget?: number // For household projects - total budgeted amount
+  description?: string
+  startDate?: string // ISO date string
+  endDate?: string // ISO date string
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ProjectCategoryBreakdown {
+  categoryId: string
+  categoryName: string
+  budgeted: number
+  actual: number
+  overUnder: number
+  percentOfBudget: number
+  transactionCount: number
+}
+
+export interface ProjectBudgetSummary {
+  projectId: string
+  projectName: string
+  budgetType: BudgetType
+  status: ProjectStatus
+  totalBudget: number
+  totalSpent: number
+  remaining: number
+  percentUsed: number
+  categoryBreakdown: ProjectCategoryBreakdown[]
+  transactionCount: number
 }
 
 // ============================================================================
@@ -374,6 +419,11 @@ export interface BudgetContextState {
   addRule: (rule: Omit<AutoCategorizationRule, 'id' | 'createdAt' | 'updatedAt'>) => void
   updateRule: (id: string, updates: Partial<AutoCategorizationRule>) => void
   deleteRule: (id: string) => void
+
+  // Project operations
+  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void
+  updateProject: (id: string, updates: Partial<Project>) => void
+  deleteProject: (id: string) => void
 
   // Settings operations
   updateSettings: (updates: Partial<AppSettings>) => void

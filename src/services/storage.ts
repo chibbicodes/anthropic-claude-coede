@@ -28,6 +28,11 @@ export class StorageService {
         data.income = []
       }
 
+      // Ensure projects array exists for backwards compatibility
+      if (!data.projects) {
+        data.projects = []
+      }
+
       return data
     } catch (error) {
       console.error('Error loading data from localStorage:', error)
@@ -76,6 +81,7 @@ export class StorageService {
       autoCategorization: data.autoCategorization.filter(
         (r) => r.budgetType === 'household' || r.budgetType === 'both'
       ),
+      projects: data.projects.filter((p) => p.budgetType === 'household'),
       settings: {
         ...data.settings,
         // Include only household-specific settings
@@ -105,6 +111,7 @@ export class StorageService {
       autoCategorization: data.autoCategorization.filter(
         (r) => r.budgetType === 'business' || r.budgetType === 'both'
       ),
+      projects: data.projects.filter((p) => p.budgetType === 'business'),
       settings: {
         ...data.settings,
         // Include only business-specific settings
@@ -155,6 +162,7 @@ export class StorageService {
             ...existing.autoCategorization,
             ...importedData.autoCategorization,
           ],
+          projects: [...(existing.projects || []), ...(importedData.projects || [])],
           settings: importedData.settings || existing.settings,
           version: CURRENT_VERSION,
         }
@@ -192,6 +200,7 @@ export class StorageService {
       income: [],
       incomeSources: [],
       autoCategorization: [],
+      projects: [],
       settings: {
         defaultBudgetView: 'household',
         householdTargets: {
@@ -282,6 +291,7 @@ export class StorageService {
       autoCategorization: data.autoCategorization.filter(
         (r) => r.budgetType !== budgetType && r.budgetType !== 'both'
       ),
+      projects: (data.projects || []).filter((p) => p.budgetType !== budgetType),
     }
   }
 }

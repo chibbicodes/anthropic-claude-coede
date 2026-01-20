@@ -7,6 +7,7 @@ import type {
   Income,
   IncomeSource,
   AutoCategorizationRule,
+  Project,
   AppSettings,
   BudgetViewType,
   BudgetContextState,
@@ -444,6 +445,54 @@ export function BudgetProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   // ============================================================================
+  // Project Operations
+  // ============================================================================
+
+  const addProject = useCallback(
+    (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
+      const now = new Date().toISOString()
+      const newProject: Project = {
+        ...project,
+        id: generateId(),
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      setAppDataState((prev) => ({
+        ...prev,
+        projects: [...prev.projects, newProject],
+      }))
+    },
+    []
+  )
+
+  const updateProject = useCallback((id: string, updates: Partial<Project>) => {
+    setAppDataState((prev) => ({
+      ...prev,
+      projects: prev.projects.map((project) =>
+        project.id === id
+          ? {
+              ...project,
+              ...updates,
+              updatedAt: new Date().toISOString(),
+            }
+          : project
+      ),
+    }))
+  }, [])
+
+  const deleteProject = useCallback((id: string) => {
+    setAppDataState((prev) => ({
+      ...prev,
+      projects: prev.projects.filter((p) => p.id !== id),
+      // Also remove projectId from transactions
+      transactions: prev.transactions.map((t) =>
+        t.projectId === id ? { ...t, projectId: undefined } : t
+      ),
+    }))
+  }, [])
+
+  // ============================================================================
   // Settings Operations
   // ============================================================================
 
@@ -510,6 +559,9 @@ export function BudgetProvider({ children }: { children: React.ReactNode }) {
     addRule,
     updateRule,
     deleteRule,
+    addProject,
+    updateProject,
+    deleteProject,
     updateSettings,
     importData,
     exportData,
