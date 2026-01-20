@@ -93,25 +93,33 @@ export default function Budget() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm font-medium text-gray-600">Total Income</p>
+          <p className="text-sm font-medium text-gray-600">
+            {budgetType === 'household' ? 'Income This Month' : 'Total Income'}
+          </p>
           <p className="text-2xl font-bold text-green-600 mt-2">
             {formatCurrency(budgetSummary.totalIncome)}
           </p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm font-medium text-gray-600">Total Budgeted</p>
+          <p className="text-sm font-medium text-gray-600">
+            {budgetType === 'household' ? 'Total Budgeted' : 'Total Budgeted'}
+          </p>
           <p className="text-2xl font-bold text-gray-900 mt-2">
             {formatCurrency(totalBudgeted)}
           </p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm font-medium text-gray-600">Actual Spent</p>
+          <p className="text-sm font-medium text-gray-600">
+            {budgetType === 'household' ? 'Used So Far' : 'Actual Spent'}
+          </p>
           <p className="text-2xl font-bold text-red-600 mt-2">
             {formatCurrency(budgetSummary.totalExpenses)}
           </p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm font-medium text-gray-600">Remaining</p>
+          <p className="text-sm font-medium text-gray-600">
+            {budgetType === 'household' ? 'Still Available' : 'Remaining'}
+          </p>
           <p
             className={`text-2xl font-bold mt-2 ${
               budgetSummary.remainingBudget >= 0 ? 'text-green-600' : 'text-red-600'
@@ -194,13 +202,13 @@ export default function Budget() {
                       Category
                     </th>
                     <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
-                      Budgeted
+                      {budgetType === 'household' ? 'Budgeted' : 'Budgeted'}
                     </th>
                     <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
-                      Spent
+                      {budgetType === 'household' ? 'Used' : 'Spent'}
                     </th>
                     <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
-                      Remaining
+                      {budgetType === 'household' ? 'Available' : 'Remaining'}
                     </th>
                     <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
                       Progress
